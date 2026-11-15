@@ -160,7 +160,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+  import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyAy9gepKXH04eriE3BPaTWe68e1mjaIIV_g",
@@ -256,65 +256,6 @@
     });
   }
 
-  function showJournal() {
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay active';
-    overlay.innerHTML = `
-      <div class="modal-content" style="text-align: left;">
-        <span class="close-modal" onclick="this.parentElement.parentElement.remove()">&times;</span>
-        <h2>Журнал записей (из облака)</h2>
-        <div id="journal-list" style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
-          <p style="text-align: center; color: #888;">Загрузка...</p>
-        </div>
-        <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; background: var(--accent);">Закрыть</button>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-
-    const recordsRef = ref(db, 'records');
-    onValue(recordsRef, (snapshot) => {
-      const data = snapshot.val();
-      const listEl = document.getElementById('journal-list');
-      if (!data) {
-        listEl.innerHTML = '<p style="text-align: center; color: #888;">Пока никто не записался.</p>';
-        return;
-      }
-      
-      let html = '<ul style="list-style: none;">';
-      Object.values(data).forEach(record => {
-        html += `<li style="margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">
-          <b>${record.name}</b> — ${record.subject} <br>
-          <small style="color: #888;">${record.date}</small>
-        </li>`;
-      });
-      html += '</ul>';
-      listEl.innerHTML = html;
-    }, { onlyOnce: true });
-  }
-
-  function checkAdminButton() {
-    const recordsRef = ref(db, 'records');
-    onValue(recordsRef, (snapshot) => {
-      const data = snapshot.val();
-      let adminBtn = document.getElementById('admin-btn');
-      
-      if (data && Object.keys(data).length > 0) {
-        if (!adminBtn) {
-          adminBtn = document.createElement('button');
-          adminBtn.id = 'admin-btn';
-          adminBtn.style.cssText = 'position: fixed; bottom: 20px; left: 20px; background: #333; color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer; z-index: 9999; border: 2px solid #ff6b00; font-weight: bold;';
-          adminBtn.textContent = '🔒 Журнал';
-          adminBtn.onclick = showJournal;
-          document.body.appendChild(adminBtn);
-        }
-      } else {
-        if (adminBtn) adminBtn.remove();
-      }
-    }, { onlyOnce: true });
-  }
-
-  setTimeout(checkAdminButton, 1000);
-
   let kabanCount = 0;
   const kabanSecrets = ["Хрю! Чего тебе?", "Хрю-хрю... Я ем желуди, не мешай.", "Ещё раз тронешь — забодаю!", "Ладно, ладно! Секрет в том, что...", "Я на самом деле не кабан. Я — заколдованный Хокаге! 🐗✨"];
   function kabanClick() {
@@ -335,7 +276,6 @@
   window.showPasswordInput = showPasswordInput;
   window.submitForm = submitForm;
   window.kabanClick = kabanClick;
-
 </script>
 </body>
 </html>
